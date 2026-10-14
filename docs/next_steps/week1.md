@@ -1,8 +1,8 @@
 ## import invoice
-- add database
-- add pyndemic
-- add import invoice endpoint
-- add get invoices endpoint
-- add get invoice endpoint
+- add validation to create invoice endpoint
+- add docker compose
+- add persistance
+- store invoice
+- create get invoice endpoint
 
 ## Add frontend?
