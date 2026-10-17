@@ -2,8 +2,7 @@ from collections.abc import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-
-DATABASE_URL="" # TODO: set url
+from ledger_flow.settings import DATABASE_URL
 
 class EntityBase(DeclarativeBase):
     pass

@@ -20,7 +20,7 @@ class Invoice(EntityBase):
         nullable=False
     )
     
-    customer_id: Mapped(str) = mapped_column(
+    customer_id: Mapped[str] = mapped_column(
         String(100),
         nullable=True
     )
