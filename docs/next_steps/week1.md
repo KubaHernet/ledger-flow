@@ -1,8 +1,7 @@
 ## import invoice
-- add validation to create invoice endpoint
-- add docker compose
-- add persistance
-- store invoice
-- create get invoice endpoint
+
+- create get invoices endpoint
+- add db migration
 
 ## Add frontend?
+

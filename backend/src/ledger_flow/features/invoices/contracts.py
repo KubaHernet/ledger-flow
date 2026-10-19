@@ -25,3 +25,15 @@ class CreateInvoiceRequest(BaseModel):
 
 class CreateInvoiceResponse(BaseModel):
     invoice_id: UUID
+    
+
+class GetInvoiceResponse(CreateInvoiceResponse):
+    invoice_number: str
+    customer_id: str
+    
+    issue_date: date
+    due_date: date
+    amount: Decimal
+    currency: str
+    
+    status: InvoiceStatus
