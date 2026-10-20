@@ -2,9 +2,10 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 from ledger_flow.database import get_db
-from ledger_flow.features.invoices.contracts import CreateInvoiceRequest, CreateInvoiceResponse, GetInvoiceResponse
+from ledger_flow.features.invoices.contracts import CreateInvoiceRequest, CreateInvoiceResponse, GetInvoiceListResponse, GetInvoiceResponse
 from ledger_flow.features.invoices.create_invoice_handler import create_invoice as handle_create_invoice
 from ledger_flow.features.invoices.get_invoice_handler import get_invoice as handle_get_invoice
+from ledger_flow.features.invoices.get_invoices_handler import get_invoices as handle_get_invoices
 
 router = APIRouter(prefix="/invoices", tags=["invoices"])
 
@@ -24,3 +25,7 @@ async def get_invoice(
     if not invoice:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found")
     return invoice
+
+@router.get("", response_model=GetInvoiceListResponse)
+async def get_invoices(db: Annotated[Session, Depends(get_db)]) -> GetInvoiceListResponse:
+    return handle_get_invoices(db)

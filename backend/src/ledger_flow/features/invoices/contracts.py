@@ -37,3 +37,9 @@ class GetInvoiceResponse(CreateInvoiceResponse):
     currency: str
     
     status: InvoiceStatus
+    
+class InvoiceResponseItem(GetInvoiceResponse):
+    pass
+
+class GetInvoiceListResponse(BaseModel):
+    invoices: list[InvoiceResponseItem]

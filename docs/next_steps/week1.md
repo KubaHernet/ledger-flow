@@ -1,6 +1,6 @@
 ## import invoice
 
-- create get invoices endpoint
+- update invoice endpoint
 - add db migration
 
 ## Add frontend?
