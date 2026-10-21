@@ -38,8 +38,26 @@ class GetInvoiceResponse(CreateInvoiceResponse):
     
     status: InvoiceStatus
     
+    
 class InvoiceResponseItem(GetInvoiceResponse):
     pass
 
+
 class GetInvoiceListResponse(BaseModel):
     invoices: list[InvoiceResponseItem]
+    
+    
+class UpdateInvoiceRequest(BaseModel):
+    invoice_number: str | None = Field(default = None, min_length=2, max_length=100, description="Unique identifier for the invoice")
+    customer_id: str | None = None
+    
+    issue_date: date | None = None
+    due_date: date | None = None
+    amount: Decimal | None = Field(default=None, gt=0, description="Total amount for the invoice")
+    currency: str | None = Field(default=None, min_length=3, max_length=3, description="Currency code in ISO 4217 format")
+    
+    status: InvoiceStatus | None = Field(default=None, description="Current status of the invoice")
+
+
+class UpdateInvoiceResponse(GetInvoiceResponse):
+    pass
