@@ -1,16 +1,27 @@
 from typing import Annotated
+from ledger_flow.features.invoices.invoices_import.contracts import ImportInvoicesResponse
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from ledger_flow.database import get_db
 from ledger_flow.features.invoices.contracts import CreateInvoiceRequest, CreateInvoiceResponse, GetInvoiceListResponse, GetInvoiceResponse, UpdateInvoiceRequest, UpdateInvoiceResponse
 from ledger_flow.features.invoices.create_invoice_handler import create_invoice as handle_create_invoice
 from ledger_flow.features.invoices.get_invoice_handler import get_invoice as handle_get_invoice
 from ledger_flow.features.invoices.get_invoices_handler import get_invoices as handle_get_invoices
 from ledger_flow.features.invoices.update_incoice_handler import update_invoice as handle_update_invoice
+from ledger_flow.features.invoices.invoices_import.import_invoices_handler import import_invoices as handle_import_invoices
 
 router = APIRouter(prefix="/invoices", tags=["invoices"])
 
-
+@router.post(
+    "/import",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ImportInvoicesResponse
+)
+async def import_invoices_endpoint(
+    file: UploadFile,
+    db: Annotated[Session, Depends(get_db),]
+):
+    return handle_import_invoices(file, db)
 
 @router.get("/{invoice_id}", response_model=GetInvoiceResponse)
 async def get_invoice(

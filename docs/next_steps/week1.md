@@ -1,7 +1,10 @@
 ## import invoice
-- write summary on how to get, getAll, add, update are implemented
 - delete endpoint?
-- add db migration
+- finish import: 
+    - row validation, extract csv parser to separate file
+    - template download
+
+## pipeline?
 
 ## Add frontend?
 
