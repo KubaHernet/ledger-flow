@@ -1,4 +1,5 @@
 from typing import Annotated
+from fastapi.responses import StreamingResponse
 from ledger_flow.features.invoices.invoices_import.contracts import ImportInvoicesResponse
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
@@ -9,8 +10,13 @@ from ledger_flow.features.invoices.get_invoice_handler import get_invoice as han
 from ledger_flow.features.invoices.get_invoices_handler import get_invoices as handle_get_invoices
 from ledger_flow.features.invoices.update_incoice_handler import update_invoice as handle_update_invoice
 from ledger_flow.features.invoices.invoices_import.import_invoices_handler import import_invoices as handle_import_invoices
+from ledger_flow.features.invoices.invoices_import.get_import_invoices_template_handler import get_import_invoices_template
 
 router = APIRouter(prefix="/invoices", tags=["invoices"])
+
+@router.get("/import/template")
+def download_invoice_import_template() -> StreamingResponse:
+    return get_import_invoices_template()
 
 @router.post(
     "/import",
