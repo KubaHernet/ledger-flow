@@ -1,12 +1,15 @@
-from ledger_flow.features.invoices.models import Invoice
 from sqlalchemy.orm import Session
 
-from ledger_flow.features.invoices.contracts import GetInvoiceListResponse, InvoiceResponseItem
+from ledger_flow.features.invoices.contracts import (
+    GetInvoiceListResponse,
+    InvoiceResponseItem,
+)
+from ledger_flow.features.invoices.models import Invoice
 
 
 def get_invoices(db: Session) -> GetInvoiceListResponse:
     invoices = db.query(Invoice).all()
-    
+
     return GetInvoiceListResponse(
         invoices=[
             InvoiceResponseItem(
@@ -17,7 +20,7 @@ def get_invoices(db: Session) -> GetInvoiceListResponse:
                 due_date=invoice.due_date,
                 amount=invoice.amount,
                 currency=invoice.currency,
-                status=invoice.status
+                status=invoice.status,
             )
             for invoice in invoices
         ]

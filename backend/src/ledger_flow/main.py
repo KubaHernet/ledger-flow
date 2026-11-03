@@ -1,5 +1,3 @@
-import uuid
-
 from fastapi import FastAPI
 
 from ledger_flow.database import EntityBase, engine
@@ -10,6 +8,7 @@ EntityBase.metadata.create_all(bind=engine)
 app = FastAPI()
 
 app.include_router(invoices_router)
+
 
 @app.get("/health")
 def health():

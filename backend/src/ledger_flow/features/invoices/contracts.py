@@ -1,8 +1,10 @@
 from datetime import date
 from decimal import Decimal
 from enum import StrEnum
-from pydantic import BaseModel, Field
 from uuid import UUID
+
+from pydantic import BaseModel, Field
+
 
 class InvoiceStatus(StrEnum):
     OPEN = "open"
@@ -12,51 +14,71 @@ class InvoiceStatus(StrEnum):
 
 
 class CreateInvoiceRequest(BaseModel):
-    invoice_number: str = Field(min_length=2, max_length=100, description="Unique identifier for the invoice")
+    invoice_number: str = Field(
+        min_length=2, max_length=100, description="Unique identifier for the invoice"
+    )
     customer_id: str | None = None
-    
+
     issue_date: date
     due_date: date
     amount: Decimal = Field(gt=0, description="Total amount for the invoice")
-    currency: str = Field(min_length=3, max_length=3, description="Currency code in ISO 4217 format")
-    
-    status: InvoiceStatus = Field(default=InvoiceStatus.OPEN, description="Current status of the invoice")
-    
+    currency: str = Field(
+        min_length=3, max_length=3, description="Currency code in ISO 4217 format"
+    )
+
+    status: InvoiceStatus = Field(
+        default=InvoiceStatus.OPEN, description="Current status of the invoice"
+    )
+
 
 class CreateInvoiceResponse(BaseModel):
     invoice_id: UUID
-    
+
 
 class GetInvoiceResponse(CreateInvoiceResponse):
     invoice_number: str
     customer_id: str
-    
+
     issue_date: date
     due_date: date
     amount: Decimal
     currency: str
-    
+
     status: InvoiceStatus
-    
-    
+
+
 class InvoiceResponseItem(GetInvoiceResponse):
     pass
 
 
 class GetInvoiceListResponse(BaseModel):
     invoices: list[InvoiceResponseItem]
-    
-    
+
+
 class UpdateInvoiceRequest(BaseModel):
-    invoice_number: str | None = Field(default = None, min_length=2, max_length=100, description="Unique identifier for the invoice")
+    invoice_number: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=100,
+        description="Unique identifier for the invoice",
+    )
     customer_id: str | None = None
-    
+
     issue_date: date | None = None
     due_date: date | None = None
-    amount: Decimal | None = Field(default=None, gt=0, description="Total amount for the invoice")
-    currency: str | None = Field(default=None, min_length=3, max_length=3, description="Currency code in ISO 4217 format")
-    
-    status: InvoiceStatus | None = Field(default=None, description="Current status of the invoice")
+    amount: Decimal | None = Field(
+        default=None, gt=0, description="Total amount for the invoice"
+    )
+    currency: str | None = Field(
+        default=None,
+        min_length=3,
+        max_length=3,
+        description="Currency code in ISO 4217 format",
+    )
+
+    status: InvoiceStatus | None = Field(
+        default=None, description="Current status of the invoice"
+    )
 
 
 class UpdateInvoiceResponse(GetInvoiceResponse):
