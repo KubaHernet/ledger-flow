@@ -17,3 +17,7 @@ packages = ["src/ledger_flow"]
 
 [tool.fastapi]
 entrypoint = "ledger_flow.main:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
