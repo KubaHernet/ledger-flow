@@ -14,7 +14,6 @@ async def import_invoices(file: UploadFile, db: Session) -> ImportInvoicesRespon
     invoices = [
         Invoice(
             invoice_number=row.invoice_number,
-            customer_name=row.customer_name,
             customer_id=row.customer_id,
             issue_date=row.issue_date,
             due_date=row.due_date,

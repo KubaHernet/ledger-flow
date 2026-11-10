@@ -14,7 +14,7 @@ def create_invoice(request: CreateInvoiceRequest, db: Session) -> CreateInvoiceR
         issue_date=request.issue_date,
         due_date=request.due_date,
         amount=request.amount,
-        currency=request.amount,
+        currency=request.currency,
         status=request.status,
     )
 

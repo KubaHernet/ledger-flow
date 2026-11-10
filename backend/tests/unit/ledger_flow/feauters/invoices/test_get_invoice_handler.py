@@ -55,5 +55,5 @@ def test_get_invoice_when_not_exists_returns_none():
     result = get_invoice(str(invoice_id), db)
 
     # Assert
-    assert result == None
+    assert result is None
     db.get.assert_called_once_with(Invoice, invoice_id)
