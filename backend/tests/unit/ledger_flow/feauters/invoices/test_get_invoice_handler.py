@@ -41,18 +41,19 @@ def test_get_invoice_when_exists_returns_invoice():
         status=invoice.status,
     )
     db.get.assert_called_once_with(Invoice, invoice_id)
-    
+
+
 def test_get_invoice_when_not_exists_returns_none():
     # Arrange
     invoice_id = "cc857f48-42fe-4b52-88a7-53c15827ef17"
     db = Mock()
-    
+
     db.get.return_value = None
-    
+
     # Act
-    
+
     result = get_invoice(str(invoice_id), db)
-    
+
     # Assert
     assert result == None
     db.get.assert_called_once_with(Invoice, invoice_id)
