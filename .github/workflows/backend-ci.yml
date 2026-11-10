@@ -44,3 +44,6 @@ jobs:
 
       - name: Ruff format check
         run: python -m ruff format --check .
+        
+      - name: Unit tests
+        run: python -m pytest tests/unit -v
