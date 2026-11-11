@@ -1,6 +1,3 @@
-from datetime import date
-from decimal import Decimal
-from unittest.mock import Mock
 from uuid import UUID
 
 from ledger_flow.features.invoices.contracts import GetInvoiceResponse
@@ -8,20 +5,10 @@ from ledger_flow.features.invoices.get_invoice_handler import get_invoice
 from ledger_flow.features.invoices.models import Invoice
 
 
-def test_get_invoice_when_exists_returns_invoice():
+def test_get_invoice_when_exists_returns_invoice(db, invoice):
     # Arrange
     invoice_id = "cc857f48-42fe-4b52-88a7-53c15827ef17"
-    db = Mock()
-    invoice = Invoice(
-        id=UUID(invoice_id),
-        invoice_number="INV-001",
-        customer_id="some_customer",
-        issue_date=date(2026, 11, 4),
-        due_date=date(2026, 11, 14),
-        amount=Decimal("100.0"),
-        currency="PLN",
-        status="open",
-    )
+    invoice.id = UUID(invoice_id)
 
     db.get.return_value = invoice
 
@@ -43,10 +30,9 @@ def test_get_invoice_when_exists_returns_invoice():
     db.get.assert_called_once_with(Invoice, invoice_id)
 
 
-def test_get_invoice_when_not_exists_returns_none():
+def test_get_invoice_when_not_exists_returns_none(db):
     # Arrange
     invoice_id = "cc857f48-42fe-4b52-88a7-53c15827ef17"
-    db = Mock()
 
     db.get.return_value = None
 
