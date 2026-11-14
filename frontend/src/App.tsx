@@ -1,9 +1,13 @@
+import { Navigate, Route, Routes } from "react-router"
+import { InvoicesPage } from "./features/invoices/InvoicesPage"
+
 function App() {
   return (
-    <main>
-      <h1>Ledger Flow</h1>
-      <p>Manage your invoices.</p>
-    </main>
+    <Routes>
+      <Route path="/" element={<Navigate to="/invoices" replace />} />
+      <Route path="/invoices" element={<InvoicesPage />} />
+      <Route path="*" element={<h1>Page not found</h1>} />
+    </Routes>
   )
 }
 
