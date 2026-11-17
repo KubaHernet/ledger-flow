@@ -1,8 +1,10 @@
 ## import invoice
 - delete endpoint?
-- adjust get invoice test to use fixture
-
-## pipeline?
 
 ## Add frontend?
+- finish add invoice feature,
+- edit invoice
+- tests
+- refactor?
+- connect frontend with backend
 

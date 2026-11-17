@@ -1,4 +1,5 @@
 import type { Invoice } from './types'
+import { useState } from 'react'
 import './InvoicesPage.css'
 
 const invoices: Invoice[] = [
@@ -20,11 +21,42 @@ const invoices: Invoice[] = [
     },
 ]
 
+type InvoiceDraft = Omit<Invoice, 'id'>
+
 export function InvoicesPage() {
+    const [draft, setDraft] = useState<InvoiceDraft | null>(null)
+
+    function addInvoice() {
+        setDraft({
+            number: '',
+            amount: '',
+            issueDate: '',
+            dueDate: '',
+            status: 'open',
+        })
+    }
+
+    function updateDraft<K extends keyof InvoiceDraft>(
+        field: K,
+        value: InvoiceDraft[K],
+    ) {
+        setDraft((current) =>
+            current ? { ...current, [field]: value } : null,
+        )
+    }
+
+
     return (
         <main className="invoices-page">
             <h1 className="invoices-page__title">Invoices</h1>
 
+            <button
+                type="button"
+                onClick={addInvoice}
+                disabled={draft !== null}
+            >
+                Add invoice
+            </button>
             <div className="invoices-page__table-container">
                 <table className="invoices-page__table">
                     <caption>All invoices</caption>
@@ -35,6 +67,7 @@ export function InvoicesPage() {
                             <th scope="col">Issue date</th>
                             <th scope="col">Due date</th>
                             <th scope="col">Status</th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,8 +78,60 @@ export function InvoicesPage() {
                                 <td>{invoice.issueDate}</td>
                                 <td>{invoice.dueDate}</td>
                                 <td>{invoice.status}</td>
+                                <td />
                             </tr>
                         ))}
+                        {draft && (
+                            <tr>
+                                <td>
+                                    <input
+                                        aria-label="Invoice number"
+                                        value={draft.number}
+                                        onChange={(event) =>
+                                            updateDraft('number', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        aria-label="Amount"
+                                        type="number"
+                                        min="0.01"
+                                        step="0.01"
+                                        value={draft.amount}
+                                        onChange={(event) =>
+                                            updateDraft('amount', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        aria-label="Issue date"
+                                        type="date"
+                                        value={draft.issueDate}
+                                        onChange={(event) =>
+                                            updateDraft('issueDate', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        aria-label="Due date"
+                                        type="date"
+                                        value={draft.dueDate}
+                                        onChange={(event) =>
+                                            updateDraft('dueDate', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>Open</td>
+                                <td>
+                                    <button type="button" onClick={() => setDraft(null)}>
+                                        Cancel
+                                    </button>
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
