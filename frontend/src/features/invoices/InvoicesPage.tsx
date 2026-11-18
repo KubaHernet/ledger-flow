@@ -36,6 +36,16 @@ export function InvoicesPage() {
         })
     }
 
+    function saveNewInvoice() {
+        if(draft == null)
+            return;
+
+        var invoice: Invoice = { ...draft, id: invoices.length.toString() }
+        invoices.push(invoice)
+
+        setDraft(null)
+    }
+
     function updateDraft<K extends keyof InvoiceDraft>(
         field: K,
         value: InvoiceDraft[K],
@@ -126,6 +136,9 @@ export function InvoicesPage() {
                                 </td>
                                 <td>Open</td>
                                 <td>
+                                    <button type="button" onClick={() => saveNewInvoice()}>
+                                        Save
+                                    </button>
                                     <button type="button" onClick={() => setDraft(null)}>
                                         Cancel
                                     </button>
