@@ -6,3 +6,5 @@ export type Invoice = {
   amount: string,
   status: 'open' | 'paid' | 'overdue' | 'cancelled'
 }
+
+export type InvoiceDraft = Omit<Invoice, 'id'>

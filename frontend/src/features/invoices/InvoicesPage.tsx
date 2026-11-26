@@ -1,8 +1,9 @@
-import type { Invoice } from './types'
+import type { Invoice, InvoiceDraft } from './types'
 import { useState } from 'react'
 import './InvoicesPage.css'
+import { InvoiceEditorRow } from './InvoiceEditorRow'
 
-const invoices: Invoice[] = [
+const initialInvoices: Invoice[] = [
     {
         id: '1',
         number: 'INV/2026/001',
@@ -21,59 +22,40 @@ const invoices: Invoice[] = [
     },
 ]
 
-type InvoiceDraft = Omit<Invoice, 'id'>
+const emptyInvoiceDraft: InvoiceDraft = {
+    number: '',
+    amount: '',
+    issueDate: '',
+    dueDate: '',
+    status: 'open',
+}
 
 export function InvoicesPage() {
-    const [draft, setDraft] = useState<InvoiceDraft | null>(null)
-    const [invoiceOnEdit, setInvoiceOnEdit] = useState<Invoice | null>(null)
+    const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices)
+    const [isAdding, setIsAdding] = useState(false)
+    const [editingInvoiceId, setEditingInvoiceId] = useState<string | null>(null)
 
-    function addInvoice() {
-        setDraft({
-            number: '',
-            amount: '',
-            issueDate: '',
-            dueDate: '',
-            status: 'open',
-        })
-    }
 
-    function saveNewInvoice() {
-        if (draft == null)
-            return;
-
-        var invoice: Invoice = { ...draft, id: invoices.length.toString() }
-        invoices.push(invoice)
-
-        setDraft(null)
-    }
-
-    function updateDraft<K extends keyof InvoiceDraft>(
-        field: K,
-        value: InvoiceDraft[K],
-    ) {
-        setDraft((current) =>
-            current ? { ...current, [field]: value } : null,
-        )
-    }
-
-    function updateInvoiceOnEdit<K extends keyof Invoice>(
-        field: K,
-        value: Invoice[K],
-    ) {
-        setInvoiceOnEdit((current) =>
-            current ? { ...current, [field]: value } : null,
-        )
-    }
-
-    function saveEditedInvoice()
-    {
-        if (invoiceOnEdit) {
-            const index = invoices.findIndex((i) => i.id === invoiceOnEdit.id);
-            if (index !== -1) {
-                invoices[index] = invoiceOnEdit;
-            }
-            setInvoiceOnEdit(null);
+    function saveNewInvoice(value: InvoiceDraft) {
+        const invoice: Invoice = {
+            ...value,
+            id: crypto.randomUUID(),
         }
+
+        setInvoices((current) => [...current, invoice])
+        setIsAdding(false)
+    }
+
+    function saveEditedInvoice(id: string, value: InvoiceDraft) {
+        setInvoices((current) =>
+            current.map((invoice) =>
+                invoice.id === id
+                    ? { ...value, id }
+                    : invoice,
+            ),
+        )
+
+        setEditingInvoiceId(null)
     }
 
 
@@ -83,8 +65,8 @@ export function InvoicesPage() {
 
             <button
                 type="button"
-                onClick={addInvoice}
-                disabled={draft !== null}
+                onClick={() => setIsAdding(true)}
+                disabled={isAdding}
             >
                 Add invoice
             </button>
@@ -103,59 +85,13 @@ export function InvoicesPage() {
                     </thead>
                     <tbody>
                         {invoices.map((invoice) =>
-                            invoice.id === invoiceOnEdit?.id ? (
-                                 <tr>
-                                <td>
-                                    <input
-                                        aria-label="Invoice number"
-                                        value={invoiceOnEdit.number}
-                                        onChange={(event) =>
-                                            updateInvoiceOnEdit('number', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        aria-label="Amount"
-                                        type="number"
-                                        min="0.01"
-                                        step="0.01"
-                                        value={invoiceOnEdit.amount}
-                                        onChange={(event) =>
-                                            updateInvoiceOnEdit('amount', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        aria-label="Issue date"
-                                        type="date"
-                                        value={invoiceOnEdit.issueDate}
-                                        onChange={(event) =>
-                                            updateInvoiceOnEdit('issueDate', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        aria-label="Due date"
-                                        type="date"
-                                        value={invoiceOnEdit.dueDate}
-                                        onChange={(event) =>
-                                            updateInvoiceOnEdit('dueDate', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>Open</td>
-                                <td>
-                                    <button type="button" onClick={() => saveEditedInvoice()}>
-                                        Save
-                                    </button>
-                                    <button type="button" onClick={() => setInvoiceOnEdit(null)}>
-                                        Cancel
-                                    </button>
-                                </td>
-                            </tr>
+                            invoice.id === editingInvoiceId ? (
+                                <InvoiceEditorRow
+                                    key={invoice.id}
+                                    initialValue={invoice}
+                                    onSave={(updatedInvoice) => saveEditedInvoice(invoice.id, updatedInvoice)}
+                                    onCancel={() => setEditingInvoiceId(null)}
+                                />
                             ) : (
                                 <tr key={invoice.id}>
                                     <td>{invoice.number}</td>
@@ -164,66 +100,23 @@ export function InvoicesPage() {
                                     <td>{invoice.dueDate}</td>
                                     <td>{invoice.status}</td>
                                     <td>
-                                        <button type="button" onClick={() => setInvoiceOnEdit(invoice)}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingInvoiceId(invoice.id)}
+                                        >
                                             Edit
                                         </button>
                                     </td>
                                 </tr>
                             ),
                         )}
-                        {draft && (
-                            <tr>
-                                <td>
-                                    <input
-                                        aria-label="Invoice number"
-                                        value={draft.number}
-                                        onChange={(event) =>
-                                            updateDraft('number', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        aria-label="Amount"
-                                        type="number"
-                                        min="0.01"
-                                        step="0.01"
-                                        value={draft.amount}
-                                        onChange={(event) =>
-                                            updateDraft('amount', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        aria-label="Issue date"
-                                        type="date"
-                                        value={draft.issueDate}
-                                        onChange={(event) =>
-                                            updateDraft('issueDate', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        aria-label="Due date"
-                                        type="date"
-                                        value={draft.dueDate}
-                                        onChange={(event) =>
-                                            updateDraft('dueDate', event.target.value)
-                                        }
-                                    />
-                                </td>
-                                <td>Open</td>
-                                <td>
-                                    <button type="button" onClick={() => saveNewInvoice()}>
-                                        Save
-                                    </button>
-                                    <button type="button" onClick={() => setDraft(null)}>
-                                        Cancel
-                                    </button>
-                                </td>
-                            </tr>
+                        {isAdding && (
+                            <InvoiceEditorRow
+                                key="new-invoice"
+                                initialValue={emptyInvoiceDraft}
+                                onSave={saveNewInvoice}
+                                onCancel={() => setIsAdding(false)}
+                            />
                         )}
                     </tbody>
                 </table>
