@@ -25,6 +25,7 @@ type InvoiceDraft = Omit<Invoice, 'id'>
 
 export function InvoicesPage() {
     const [draft, setDraft] = useState<InvoiceDraft | null>(null)
+    const [invoiceOnEdit, setInvoiceOnEdit] = useState<Invoice | null>(null)
 
     function addInvoice() {
         setDraft({
@@ -37,7 +38,7 @@ export function InvoicesPage() {
     }
 
     function saveNewInvoice() {
-        if(draft == null)
+        if (draft == null)
             return;
 
         var invoice: Invoice = { ...draft, id: invoices.length.toString() }
@@ -53,6 +54,26 @@ export function InvoicesPage() {
         setDraft((current) =>
             current ? { ...current, [field]: value } : null,
         )
+    }
+
+    function updateInvoiceOnEdit<K extends keyof Invoice>(
+        field: K,
+        value: Invoice[K],
+    ) {
+        setInvoiceOnEdit((current) =>
+            current ? { ...current, [field]: value } : null,
+        )
+    }
+
+    function saveEditedInvoice()
+    {
+        if (invoiceOnEdit) {
+            const index = invoices.findIndex((i) => i.id === invoiceOnEdit.id);
+            if (index !== -1) {
+                invoices[index] = invoiceOnEdit;
+            }
+            setInvoiceOnEdit(null);
+        }
     }
 
 
@@ -81,16 +102,75 @@ export function InvoicesPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {invoices.map((invoice) => (
-                            <tr key={invoice.id}>
-                                <td>{invoice.number}</td>
-                                <td>{invoice.amount}</td>
-                                <td>{invoice.issueDate}</td>
-                                <td>{invoice.dueDate}</td>
-                                <td>{invoice.status}</td>
-                                <td />
+                        {invoices.map((invoice) =>
+                            invoice.id === invoiceOnEdit?.id ? (
+                                 <tr>
+                                <td>
+                                    <input
+                                        aria-label="Invoice number"
+                                        value={invoiceOnEdit.number}
+                                        onChange={(event) =>
+                                            updateInvoiceOnEdit('number', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        aria-label="Amount"
+                                        type="number"
+                                        min="0.01"
+                                        step="0.01"
+                                        value={invoiceOnEdit.amount}
+                                        onChange={(event) =>
+                                            updateInvoiceOnEdit('amount', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        aria-label="Issue date"
+                                        type="date"
+                                        value={invoiceOnEdit.issueDate}
+                                        onChange={(event) =>
+                                            updateInvoiceOnEdit('issueDate', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        aria-label="Due date"
+                                        type="date"
+                                        value={invoiceOnEdit.dueDate}
+                                        onChange={(event) =>
+                                            updateInvoiceOnEdit('dueDate', event.target.value)
+                                        }
+                                    />
+                                </td>
+                                <td>Open</td>
+                                <td>
+                                    <button type="button" onClick={() => saveEditedInvoice()}>
+                                        Save
+                                    </button>
+                                    <button type="button" onClick={() => setInvoiceOnEdit(null)}>
+                                        Cancel
+                                    </button>
+                                </td>
                             </tr>
-                        ))}
+                            ) : (
+                                <tr key={invoice.id}>
+                                    <td>{invoice.number}</td>
+                                    <td>{invoice.amount}</td>
+                                    <td>{invoice.issueDate}</td>
+                                    <td>{invoice.dueDate}</td>
+                                    <td>{invoice.status}</td>
+                                    <td>
+                                        <button type="button" onClick={() => setInvoiceOnEdit(invoice)}>
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            ),
+                        )}
                         {draft && (
                             <tr>
                                 <td>
