@@ -2,8 +2,7 @@
 - delete endpoint?
 
 ## Add frontend?
-- finish add invoice feature,
-- edit invoice
+- validation for editing and adding
 - tests
 - refactor?
 - connect frontend with backend
