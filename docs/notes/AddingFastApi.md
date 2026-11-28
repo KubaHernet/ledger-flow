@@ -11,4 +11,4 @@ When you run uv add, it selects compatible versions of FastAPI and all the packa
 
 4. Running app
 - `cd .\backend\src\ledger_flow`
-- `uv 1run fastapi dev`
+- `uv run fastapi dev`

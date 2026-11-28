@@ -1,26 +1,8 @@
 import type { Invoice, InvoiceDraft } from './types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './InvoicesPage.css'
 import { InvoiceEditorRow } from './InvoiceEditorRow'
-
-const initialInvoices: Invoice[] = [
-    {
-        id: '1',
-        number: 'INV/2026/001',
-        issueDate: '2026-11-01',
-        dueDate: '2026-11-30',
-        amount: '1234.56',
-        status: 'open',
-    },
-    {
-        id: '2',
-        number: 'INV/2026/002',
-        issueDate: '2026-11-02',
-        dueDate: '2026-11-16',
-        amount: '2500.00',
-        status: 'paid',
-    },
-]
+import { getInvoices } from './api'
 
 const emptyInvoiceDraft: InvoiceDraft = {
     number: '',
@@ -31,9 +13,42 @@ const emptyInvoiceDraft: InvoiceDraft = {
 }
 
 export function InvoicesPage() {
-    const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices)
+    const [invoices, setInvoices] = useState<Invoice[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [isAdding, setIsAdding] = useState(false)
     const [editingInvoiceId, setEditingInvoiceId] = useState<string | null>(null)
+
+    useEffect(() => {
+        const controller = new AbortController()
+        const { signal } = controller
+
+        async function loadInvoices() {
+            try {
+                const data = await getInvoices(signal)
+
+                if (!signal.aborted) {
+                    setInvoices(data)
+                }
+            } catch (error) {
+                if (!signal.aborted) {
+                    setError(
+                        error instanceof Error
+                            ? error.message
+                            : 'Could not load invoices',
+                    )
+                }
+            } finally {
+                if (!signal.aborted) {
+                    setIsLoading(false)
+                }
+            }
+        }
+
+        void loadInvoices()
+
+        return () => controller.abort()
+    }, [])
 
 
     function saveNewInvoice(value: InvoiceDraft) {
@@ -62,6 +77,13 @@ export function InvoicesPage() {
     return (
         <main className="invoices-page">
             <h1 className="invoices-page__title">Invoices</h1>
+            {isLoading && <p role="status">Loading invoices…</p>}
+
+            {error && <p role="alert">{error}</p>}
+
+            {!isLoading && !error && invoices.length === 0 && (
+                <p>No invoices found.</p>
+            )}
 
             <button
                 type="button"
